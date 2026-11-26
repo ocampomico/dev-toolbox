@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ThemeSwitch } from './theme'
+import { Diff } from './views/Diff'
 import { Encode } from './views/Encode'
 import { Hash, Uuid } from './views/Ids'
 import { Json } from './views/Json'
@@ -8,6 +9,7 @@ import { Time } from './views/Time'
 
 const TABS = [
   { id: 'json', label: 'JSON', title: 'JSON and CSV', blurb: 'Format, validate, and convert between JSON and CSV.', View: Json },
+  { id: 'diff', label: 'Diff', title: 'JSON diff', blurb: 'Compare two JSON documents and list what was added, removed, or changed.', View: Diff },
   { id: 'encode', label: 'Encode', title: 'Base64 and URL', blurb: 'Encode and decode Base64 (UTF-8 safe) and URL components.', View: Encode },
   { id: 'jwt', label: 'JWT', title: 'JWT decoder', blurb: 'Read the header, payload, and expiry of a JSON Web Token.', View: Jwt },
   { id: 'uuid', label: 'UUID', title: 'UUIDs', blurb: 'Generate v4 or v7 UUIDs, or inspect one.', View: Uuid },

@@ -5,6 +5,7 @@ Small developer utilities that run entirely in the browser. Nothing you paste is
 ## Tools
 
 - **JSON**: format, minify, sort keys, and validate (errors include the line and column). Converts JSON to CSV (nested objects become dot keys) and CSV to JSON (detects the delimiter, handles quoted fields, optionally reads numbers, booleans, and null), with a table preview.
+- **Diff**: compares two JSON documents and lists added, removed, and changed values by path (like `$.user.tags[2]`) with old and new values. Objects are matched by key, so key order is ignored; arrays are matched by index. Includes swap and format-both buttons.
 - **Encode**: Base64 (UTF-8 safe, optional URL-safe output, decodes either form) and URL component encoding.
 - **JWT**: decodes the header and payload, shows `iat`, `nbf`, and `exp` as dates, and says whether the token has expired. It does not verify signatures.
 - **UUID**: generates v4 or v7 (time-ordered) UUIDs in bulk and inspects any UUID's version, variant, and embedded time.
