@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { countDiff, diffJson, formatPath, previewValue } from './diff'
 import { base64Decode, base64Encode, urlDecode, urlEncode } from './encode'
 import { digest, hmac, inspectUuid, uuidV4, uuidV7 } from './ids'
 import { csvToJson, detectDelimiter, findErrorIndex, jsonToCsv, parseCsv, parseJson, sortKeys } from './json'
@@ -154,5 +155,64 @@ describe('findErrorIndex', () => {
     expect(findErrorIndex('{"a": 1} x')).toBe(9)
     expect(findErrorIndex('"abc')).toBe(4)
     expect(findErrorIndex('{"a": [1, {"b": null}], "c": "\\u00e9"}')).toBeNull()
+  })
+})
+
+describe('diffJson', () => {
+  it('finds nested changes by path and ignores key order', () => {
+    const a = { user: { name: 'Ada', tags: ['x', 'y'], team: { id: 1, lead: true } }, v: 1 }
+    const b = { v: 1, user: { team: { lead: false, id: 1 }, name: 'Ada', tags: ['x', 'y'], email: 'a@x.io' } }
+    expect(diffJson(a, b)).toEqual([
+      { kind: 'changed', path: '$.user.team.lead', before: true, after: false },
+      { kind: 'added', path: '$.user.email', after: 'a@x.io' },
+    ])
+  })
+
+  it('compares arrays by index when lengths differ', () => {
+    expect(diffJson({ tags: [1, 2, 3, 4] }, { tags: [1, 5] })).toEqual([
+      { kind: 'changed', path: '$.tags[1]', before: 2, after: 5 },
+      { kind: 'removed', path: '$.tags[2]', before: 3 },
+      { kind: 'removed', path: '$.tags[3]', before: 4 },
+    ])
+    expect(diffJson([], [{ a: 1 }])).toEqual([{ kind: 'added', path: '$[0]', after: { a: 1 } }])
+  })
+
+  it('reports a type change once at its path', () => {
+    expect(diffJson({ n: 1 }, { n: '1' })).toEqual([{ kind: 'changed', path: '$.n', before: 1, after: '1' }])
+    expect(diffJson({ o: { a: 1, b: 2 } }, { o: null })).toEqual([{ kind: 'changed', path: '$.o', before: { a: 1, b: 2 }, after: null }])
+    expect(diffJson({ o: [1] }, { o: { 0: 1 } })).toEqual([{ kind: 'changed', path: '$.o', before: [1], after: { 0: 1 } }])
+    expect(diffJson(null, null)).toEqual([])
+  })
+
+  it('handles unicode and awkward keys', () => {
+    const a = JSON.parse('{"名前": "太郎", "emoji 😀": 1, "a.b": 1, "__proto__": {"x": 1}}')
+    const b = JSON.parse('{"名前": "花子", "emoji 😀": 2, "a.b": 1, "__proto__": {"x": 2}}')
+    expect(diffJson(a, b).map((e) => e.path)).toEqual(['$.名前', '$["emoji 😀"]', '$.__proto__.x'])
+  })
+
+  it('returns nothing for identical input', () => {
+    const v = { a: [1, { b: null, c: 'x' }], d: { e: false } }
+    expect(diffJson(v, structuredClone(v))).toEqual([])
+    expect(diffJson('same', 'same')).toEqual([])
+  })
+
+  it('copes with deep nesting without recursion', () => {
+    let a: unknown = 1
+    let b: unknown = 2
+    for (let i = 0; i < 20000; i++) {
+      a = [a]
+      b = [b]
+    }
+    const d = diffJson(a, b)
+    expect(d).toHaveLength(1)
+    expect(d[0].kind).toBe('changed')
+  })
+
+  it('counts entries and formats paths and previews', () => {
+    expect(countDiff(diffJson({ a: 1, b: 2 }, { b: 3, c: 4 }))).toEqual({ added: 1, removed: 1, changed: 1 })
+    expect(formatPath(['user', 'tags', 2])).toBe('$.user.tags[2]')
+    expect(formatPath(['has space', '1x'])).toBe('$["has space"]["1x"]')
+    expect(formatPath([])).toBe('$')
+    expect(previewValue({ a: 'x'.repeat(50) }, 10)).toBe('{"a":"xxx…')
   })
 })
