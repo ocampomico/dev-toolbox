@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ThemeSwitch } from './theme'
+import { Cron } from './views/Cron'
 import { Diff } from './views/Diff'
 import { Encode } from './views/Encode'
 import { Hash, Uuid } from './views/Ids'
@@ -14,6 +15,7 @@ const TABS = [
   { id: 'jwt', label: 'JWT', title: 'JWT decoder', blurb: 'Read the header, payload, and expiry of a JSON Web Token.', View: Jwt },
   { id: 'uuid', label: 'UUID', title: 'UUIDs', blurb: 'Generate v4 or v7 UUIDs, or inspect one.', View: Uuid },
   { id: 'hash', label: 'Hash', title: 'Hashes', blurb: 'SHA digests and HMACs of any text.', View: Hash },
+  { id: 'cron', label: 'Cron', title: 'Cron explainer', blurb: 'Read a cron expression in plain English and see when it runs next.', View: Cron },
   { id: 'time', label: 'Time', title: 'Timestamps', blurb: 'Convert Unix timestamps and dates across time zones.', View: Time },
 ] as const
 

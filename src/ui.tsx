@@ -67,7 +67,23 @@ export function Code({
   )
 }
 
-export function TextField({ label, value, onChange, placeholder, mono }: { label: string; value: string; onChange: (s: string) => void; placeholder?: string; mono?: boolean }) {
+export function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  mono,
+  invalid,
+  describedBy,
+}: {
+  label: string
+  value: string
+  onChange: (s: string) => void
+  placeholder?: string
+  mono?: boolean
+  invalid?: boolean
+  describedBy?: string
+}) {
   const id = useId()
   return (
     <div className="min-w-0">
@@ -77,7 +93,9 @@ export function TextField({ label, value, onChange, placeholder, mono }: { label
         type="text"
         spellCheck={false}
         autoComplete="off"
-        className={`${fieldCls} h-10 ${mono ? 'font-mono text-[13px]' : ''}`}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
+        className={`${fieldCls} h-10 ${mono ? 'font-mono text-[13px]' : ''} ${invalid ? 'border-warn' : ''}`}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}

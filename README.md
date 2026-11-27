@@ -10,6 +10,7 @@ Small developer utilities that run entirely in the browser. Nothing you paste is
 - **JWT**: decodes the header and payload, shows `iat`, `nbf`, and `exp` as dates, and says whether the token has expired. It does not verify signatures.
 - **UUID**: generates v4 or v7 (time-ordered) UUIDs in bulk and inspects any UUID's version, variant, and embedded time.
 - **Hash**: SHA-1, SHA-256, SHA-384, and SHA-512 digests, or HMACs with a key, through Web Crypto.
+- **Cron**: explains a 5-field cron expression or a shortcut like `@daily` in plain English, breaks it down field by field, and lists the next 5 runs in your time zone. Supports lists, ranges, steps, month and day names, 7 for Sunday, and the rule that cron runs on either day field when both are set. Errors name the field that is wrong.
 - **Time**: live Unix time, and conversion between seconds, milliseconds, ISO 8601, and any time zone.
 
 ## Develop
